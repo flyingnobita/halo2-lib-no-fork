@@ -1,8 +1,8 @@
 #![allow(non_snake_case)]
 use super::pairing::PairingChip;
-use super::{Fp12Chip, Fp2Chip, FpChip, FqPoint};
-use crate::ecc::{EcPoint, EccChip};
-use crate::fields::{FieldChip, FieldExtPoint, PrimeField};
+use super::{Fp12Chip, Fp2Chip, FpChip};
+use crate::ecc::EccChip;
+use crate::fields::{FieldChip, PrimeField};
 use crate::halo2_proofs::halo2curves::bn256::{G1Affine, G2Affine};
 use halo2_base::halo2_proofs::halo2curves::bn256::Fq12;
 use halo2_base::{AssignedValue, Context};
@@ -26,8 +26,6 @@ impl<'chip, F: PrimeField> BlsSignatureChipTest<'chip, F> {
         pubkey: G1Affine,
         msghash: G2Affine,
     ) -> Vec<AssignedValue<F>> {
-        // ) -> FqPoint<F> {
-        // ) -> FieldExtPoint<bigint::CRTInteger<F>> {
         // Check Pubkey is valid
 
         // Check Signature is valid
