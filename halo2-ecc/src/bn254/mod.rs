@@ -4,6 +4,8 @@ use crate::{
     fields::{fp, fp12, fp2, FieldExtPoint},
 };
 
+pub mod bls_signature;
+pub mod bls_signature_test;
 pub mod final_exp;
 pub mod pairing;
 
