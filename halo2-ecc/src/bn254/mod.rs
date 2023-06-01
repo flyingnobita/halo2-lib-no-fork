@@ -7,6 +7,7 @@ use crate::{
 pub mod bls_signature;
 pub mod bls_signature_test;
 pub mod final_exp;
+pub mod frobenius_map_fp2;
 pub mod pairing;
 
 pub type FpChip<'range, F> = fp::FpChip<'range, F, Fq>;

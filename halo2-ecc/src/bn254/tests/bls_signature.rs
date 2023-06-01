@@ -57,6 +57,7 @@ fn bls_signature_test<F: PrimeField>(
     let fp_chip_2 = FpChip::<F>::new(&range, params.limb_bits, params.num_limbs);
     let pairing_chip = PairingChip::new(&fp_chip_1);
     let bls_signature_chip = BlsSignatureChip::new(&fp_chip_2, &pairing_chip);
+
     let result = bls_signature_chip.bls_signature_verify(ctx, g1, signature, pubkey, msghash);
 
     // Calculate non-halo2 pairing by Multipairing
@@ -91,7 +92,7 @@ fn random_bls_signature_circuit(
 
     let sk = Fr::random(OsRng);
     let pubkey = G1Affine::from(G1Affine::generator() * sk);
-    // let Hash_m = G2Affine::random(OsRng);
+    // TODO: Implement hash_to_curve(msg) for arbitrary message
     let msg_hash = G2Affine::generator();
     let signature = G2Affine::from(msg_hash * sk);
     let g1 = G1Affine::generator();

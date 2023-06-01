@@ -3,6 +3,9 @@
 #![allow(clippy::type_complexity)]
 #![feature(int_log)]
 #![feature(trait_alias)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+#![allow(dead_code)]
 
 pub mod bigint;
 pub mod ecc;
