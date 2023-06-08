@@ -1,4 +1,5 @@
 #![allow(non_snake_case)]
+use super::bls_signature::BlsSignatureChip;
 use super::pairing::PairingChip;
 use super::*;
 use crate::halo2_proofs::{
@@ -21,6 +22,7 @@ use halo2_base::utils::fe_to_biguint;
 use serde::{Deserialize, Serialize};
 use std::io::Write;
 
+pub mod bls_signature;
 pub mod ec_add;
 pub mod fixed_base_msm;
 pub mod msm;
