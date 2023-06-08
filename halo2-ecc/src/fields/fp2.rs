@@ -1,7 +1,10 @@
 use std::fmt::Debug;
 use std::marker::PhantomData;
 
-use halo2_base::{utils::modulus, AssignedValue, Context};
+use halo2_base::{
+    halo2_proofs::halo2curves::bn256::FROBENIUS_COEFF_FQ2_C1, utils::modulus, AssignedValue,
+    Context,
+};
 use num_bigint::BigUint;
 
 use crate::impl_field_ext_chip_common;
@@ -119,6 +122,20 @@ where
 mod bn254 {
     use crate::fields::FieldExtConstructor;
     use crate::halo2_proofs::halo2curves::bn256::{Fq, Fq2};
+    impl FieldExtConstructor<Fq, 2> for Fq2 {
+        fn new(c: [Fq; 2]) -> Self {
+            Fq2 { c0: c[0], c1: c[1] }
+        }
+
+        fn coeffs(&self) -> Vec<Fq> {
+            vec![self.c0, self.c1]
+        }
+    }
+}
+
+mod bls12_381 {
+    use crate::fields::FieldExtConstructor;
+    use crate::halo2_proofs::halo2curves::bls12_381::{Fq, Fq2};
     impl FieldExtConstructor<Fq, 2> for Fq2 {
         fn new(c: [Fq; 2]) -> Self {
             Fq2 { c0: c[0], c1: c[1] }
