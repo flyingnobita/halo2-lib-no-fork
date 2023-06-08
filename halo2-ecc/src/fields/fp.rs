@@ -22,6 +22,7 @@ pub type BaseFieldChip<'range, C> =
 
 pub type FpConfig<F> = RangeConfig<F>;
 
+
 /// Wrapper around `FieldPoint` to guarantee this is a "reduced" representation of an `Fp` field element.
 /// A reduced representation guarantees that there is a *unique* representation of each field element.
 /// Typically this means Uints that are less than the modulus.
@@ -308,8 +309,22 @@ impl<'range, F: PrimeField, Fp: PrimeField> FieldChip<F> for FpChip<'range, F, F
         let n = self.limb_bits;
         let a = a.into();
         let k = a.truncation.limbs.len();
-        debug_assert!(max_bits > n * (k - 1) && max_bits <= n * k);
-        let last_limb_bits = max_bits - n * (k - 1);
+        // BN254: max_bits: 254, n = 90, k = 3, n * (k - 1) = 180 < max_bits < 270 = n * k
+        // BLS12_381: max_bits: 381, n = 90, k = 3, n * (k - 1) = 180 < max_bits < 270 = n * k
+
+        // println!("--- halo2-ecc/src/fields/fp.rs::range_check() ---");
+        // println!("max_bits: {max_bits:#?}"); // 381
+        // println!("n: {n:#?} k: {k:#?}"); // 103, 5
+        // println!("n * (k - 1): {:#?}", n * (k - 1)); // 412
+        // println!("n * k: {:#?}", n * k); // 515
+        // print_type_of(&max_bits); // usize
+        // print_type_of(&n); // usize
+        // print_type_of(&k); // usize
+
+        // debug_assert!(max_bits > n * (k - 1) && max_bits <= n * k);
+        // let last_limb_bits = max_bits - n * (k - 1);
+        let last_limb_bits: usize =
+            if max_bits < (n * (k - 1)) { 0 } else { max_bits - n * (k - 1) };
 
         debug_assert!(a.value.bits() as usize <= max_bits);
 
