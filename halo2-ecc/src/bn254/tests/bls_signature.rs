@@ -90,7 +90,7 @@ fn random_bls_signature_circuit(
     let sk = Fr::random(OsRng);
     let pubkey = G1Affine::from(G1Affine::generator() * sk);
     // TODO: Implement hash_to_curve(msg) for arbitrary message
-    let msg_hash = G2Affine::generator();
+    let msg_hash = G2Affine::random(OsRng);
     let signature = G2Affine::from(msg_hash * sk);
     let g1 = G1Affine::generator();
 
