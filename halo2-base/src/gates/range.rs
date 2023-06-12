@@ -514,9 +514,13 @@ impl<F: ScalarField> RangeInstructions<F> for RangeChip<F> {
         // println!("range check {} bits {} len", range_bits, k);
         let rem_bits = range_bits % self.lookup_bits;
 
+        // println!("--- halo2-ecc/src/gates/range.rs::range_check() ---");
+        // println!("range_bits: {range_bits}, k {k}, lookup_bits {}", self.lookup_bits);
         debug_assert!(self.limb_bases.len() >= k);
 
-        if k == 1 {
+        if k == 0 {
+            return;
+        } else if k == 1 {
             ctx.cells_to_lookup.push(a);
         } else {
             let limbs = decompose_fe_to_u64_limbs(a.value(), k, self.lookup_bits)

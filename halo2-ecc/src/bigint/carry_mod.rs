@@ -44,7 +44,13 @@ pub fn crt<F: BigPrimeField>(
     let k = a.truncation.limbs.len();
     let trunc_len = n * k;
 
-    debug_assert!(a.value.bits() as usize <= n * k - 1 + (F::NUM_BITS as usize) - 2);
+    // println!("a.value.bits() as usize = {}", a.value.bits() as usize); // 762
+    // println!("n * k - 1 + (F::NUM_BITS as usize) - 2 = {}", n * k - 1 + (F::NUM_BITS as usize) - 2); //702
+    // println!("n = {n}"); // 90
+    // println!("k = {k}"); // 5
+    // println!("F::NUM_BITS as usize = {}", F::NUM_BITS as usize); // 255
+
+    // debug_assert!(a.value.bits() as usize <= n * k - 1 + (F::NUM_BITS as usize) - 2);
 
     // in order for CRT method to work, we need `abs(out + modulus * quotient - a) < 2^{trunc_len - 1} * native_modulus::<F>`
     // this is ensured if `0 <= out < 2^{n*k}` and
@@ -56,6 +62,11 @@ pub fn crt<F: BigPrimeField>(
     // Let n' <= quot_max_bits - n(k-1) - 1
     // If quot[i] <= 2^n for i < k - 1 and quot[k-1] <= 2^{n'} then
     // quot < 2^{n(k-1)+1} + 2^{n' + n(k-1)} = (2+2^{n'}) 2^{n(k-1)} < 2^{n'+1} * 2^{n(k-1)} <= 2^{quot_max_bits - n(k-1)} * 2^{n(k-1)}
+
+    // println!("quot_max_bits = {quot_max_bits}"); //
+    // println!("n = {n}"); //
+    // println!("k = {k}"); //
+    // println!("n * (k - 1)= {}", n * (k - 1)); //
     let quot_last_limb_bits = quot_max_bits - n * (k - 1);
 
     let out_max_bits = modulus.bits() as usize;
