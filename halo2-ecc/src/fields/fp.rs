@@ -22,7 +22,7 @@ pub type BaseFieldChip<'range, C> =
 
 pub type FpConfig<F> = RangeConfig<F>;
 
-use crate::print_type_of;
+// use crate::print_type_of;
 
 /// Wrapper around `FieldPoint` to guarantee this is a "reduced" representation of an `Fp` field element.
 /// A reduced representation guarantees that there is a *unique* representation of each field element.
