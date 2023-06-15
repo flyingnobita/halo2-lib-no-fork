@@ -3,6 +3,11 @@ name = "halo2-ecc"
 version = "0.3.0"
 edition = "2021"
 
+[lib]
+name = "halo2ecc"
+path = "src/lib.rs"
+crate-type = ["cdylib", "rlib"]
+
 [dependencies]
 itertools = "0.10"
 num-bigint = { version = "0.4", features = ["rand"] }
@@ -30,7 +35,7 @@ criterion-macro = "0.4"
 halo2-base = { path = "../halo2-base", default-features = false, features = ["test-utils"] }
 
 [features]
-default = ["jemallocator", "halo2-axiom", "display"]
+default = ["halo2-axiom", "display"]
 dev-graph = ["halo2-base/dev-graph"]
 display = ["halo2-base/display"]
 halo2-pse = ["halo2-base/halo2-pse"]
@@ -49,3 +54,14 @@ harness = false
 [[bench]]
 name = "fixed_base_msm"
 harness = false
+
+[target.'cfg(target_family = "wasm")'.dependencies]
+getrandom = { version = "0.2", features = ["js"]}
+wasm-bindgen = { version = "0.2", features = ["serde-serialize"]}
+console_error_panic_hook = "0.1.7"
+rayon = "1.5"
+wasm-bindgen-rayon = { version = "1.0"}
+web-sys = { version = "0.3", features = ["Request", "Window", "Response"] }
+wasm-bindgen-futures = "0.4"
+js-sys = "0.3"
+# stdweb = "0.4.17"

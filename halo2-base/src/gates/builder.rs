@@ -14,11 +14,15 @@ use serde::{Deserialize, Serialize};
 use std::{
     cell::RefCell,
     collections::{HashMap, HashSet},
-    env::{set_var, var},
+    // env::{set_var, var},
+    env::var,
 };
 
 mod parallelize;
 pub use parallelize::*;
+
+// use super::local_storage_fs;
+// use std::io::{Read, Write};
 
 /// Vector of thread advice column break points
 pub type ThreadBreakPoints = Vec<usize>;
@@ -184,7 +188,8 @@ impl<F: ScalarField> GateThreadBuilder<F> {
             println!("Total {total_fixed} fixed cells");
             log::info!("Auto-calculated config params:\n {params:#?}");
         }
-        set_var("FLEX_GATE_CONFIG_PARAMS", serde_json::to_string(&params).unwrap());
+        println!("FLEX_GATE_CONFIG_PARAMS: {params:#?}");
+        // set_var("FLEX_GATE_CONFIG_PARAMS", serde_json::to_string(&params).unwrap());
         params
     }
 
@@ -566,14 +571,42 @@ impl<F: ScalarField> Circuit<F> for GateCircuitBuilder<F> {
 
     /// Configures a new circuit using the the parameters specified [Config].
     fn configure(meta: &mut ConstraintSystem<F>) -> FlexGateConfig<F> {
+        // let file =
+        // fs::File::open("FLEX_GATE_CONFIG_PARAMS.json").expect("file should open read only");
+        // let json: serde_json::Value =
+        // serde_json::from_reader(file).expect("file should be proper JSON");
+
         let FlexGateConfigParams {
             strategy,
             num_advice_per_phase,
             num_lookup_advice_per_phase: _,
             num_fixed,
             k,
-        } = serde_json::from_str(&var("FLEX_GATE_CONFIG_PARAMS").unwrap()).unwrap();
+            // } = serde_json::from_str(&var("FLEX_GATE_CONFIG_PARAMS").unwrap()).unwrap();
+        } = FlexGateConfigParams {
+            strategy: GateStrategy::Vertical,
+            k: 19,
+            num_advice_per_phase: vec![9, 0, 0],
+            num_lookup_advice_per_phase: vec![1, 0, 0],
+            num_fixed: 1,
+        };
         FlexGateConfig::configure(meta, strategy, &num_advice_per_phase, num_fixed, k)
+
+        // FlexGateConfigParams {
+        //     strategy: Vertical,
+        //     k: 19,
+        //     num_advice_per_phase: [
+        //         9,
+        //         0,
+        //         0,
+        //     ],
+        //     num_lookup_advice_per_phase: [
+        //         1,
+        //         0,
+        //         0,
+        //     ],
+        //     num_fixed: 1,
+        // }
     }
 
     /// Performs the actual computation on the circuit (e.g., witness generation), filling in all the advice values for a particular proof.
@@ -628,7 +661,14 @@ impl<F: ScalarField> Circuit<F> for RangeCircuitBuilder<F> {
             num_lookup_advice_per_phase,
             num_fixed,
             k,
-        } = serde_json::from_str(&var("FLEX_GATE_CONFIG_PARAMS").unwrap()).unwrap();
+        } = FlexGateConfigParams {
+            strategy: GateStrategy::Vertical,
+            k: 19,
+            num_advice_per_phase: vec![9, 0, 0],
+            num_lookup_advice_per_phase: vec![1, 0, 0],
+            num_fixed: 1,
+        };
+
         let strategy = match strategy {
             GateStrategy::Vertical => RangeStrategy::Vertical,
         };

@@ -1,0 +1,36 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in library 'halo2-base'",
+      "cargo": {
+        "args": ["test", "--no-run", "--lib", "--package=halo2-base"],
+        "filter": {
+          "name": "halo2-base",
+          "kind": "lib"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    },
+    {
+      "type": "lldb",
+      "request": "launch",
+      "name": "Debug unit tests in library 'halo2-ecc'",
+      "cargo": {
+        "args": ["test", "--no-run", "--lib", "--package=halo2-ecc"],
+        "filter": {
+          "name": "halo2-ecc",
+          "kind": "lib"
+        }
+      },
+      "args": [],
+      "cwd": "${workspaceFolder}"
+    }
+  ]
+}

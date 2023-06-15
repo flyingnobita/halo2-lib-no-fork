@@ -1,0 +1,75 @@
+use hex;
+use std::convert::AsRef;
+use std::io::{Read, Result, Write};
+use std::path::Path;
+use stdweb::web::window;
+
+pub struct File {
+    path: String,
+    offset: usize,
+}
+
+impl File {
+    pub fn open<P: AsRef<Path>>(path: P) -> Result<File> {
+        let path: &str = path.as_ref().to_str().unwrap();
+
+        if !window().local_storage().contains_key(path) {
+            Err(std::io::Error::from_raw_os_error(1))
+        } else {
+            Ok(File { path: path.to_string(), offset: 0 })
+        }
+    }
+    pub fn create<P: AsRef<Path>>(path: P) -> Result<File> {
+        let path: &str = path.as_ref().to_str().unwrap();
+
+        match window().local_storage().insert(path, "") {
+            Ok(_) => Ok(File { path: path.to_string(), offset: 0 }),
+            Err(_) => Err(std::io::Error::from_raw_os_error(1)),
+        }
+    }
+}
+
+impl Read for File {
+    fn read(&mut self, buf: &mut [u8]) -> Result<usize> {
+        if let Some(string) = window().local_storage().get(&self.path) {
+            match hex::decode(&string) {
+                Ok(data) => {
+                    let mut end = self.offset + buf.len();
+                    if end > data.len() {
+                        end = data.len();
+                    }
+
+                    let bytes = &data[self.offset..end];
+
+                    buf[..bytes.len()].copy_from_slice(&bytes);
+                    self.offset = end;
+                    Ok(bytes.len())
+                }
+                Err(_) => Err(std::io::Error::from_raw_os_error(8)),
+            }
+        } else {
+            Err(std::io::Error::from_raw_os_error(7))
+        }
+    }
+}
+impl Read for &File {
+    fn read(&mut self, _buf: &mut [u8]) -> Result<usize> {
+        //Ok(0)
+        unimplemented!()
+    }
+}
+
+impl Write for File {
+    fn write(&mut self, buf: &[u8]) -> Result<usize> {
+        let string = window().local_storage().get(&self.path).unwrap();
+        let new_string = string + &hex::encode(buf);
+        self.offset += buf.len();
+        match window().local_storage().insert(&self.path, &new_string) {
+            Ok(_) => Ok(buf.len()),
+            Err(_) => Err(std::io::Error::from_raw_os_error(1)),
+        }
+    }
+    fn flush(&mut self) -> Result<()> {
+        Ok(())
+    }
+}
