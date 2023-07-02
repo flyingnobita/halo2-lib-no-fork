@@ -31,25 +31,30 @@ impl<'chip, F: PrimeField> Fp2Chip<'chip, F> {
         let fp_chip = self.fp_chip();
         let fp2_chip = Fp2Chip::<F>::new(fp_chip);
 
-        let frob_coeff =
-            Fq2::new(FROBENIUS_COEFF_FQ2_C1[0], FROBENIUS_COEFF_FQ2_C1[1]).pow_vartime([1_u64]);
+        // let frob_coeff =
+        // Fq2::new(FROBENIUS_COEFF_FQ2_C1[0], FROBENIUS_COEFF_FQ2_C1[1]).pow_vartime([1_u64]);
+        // let frob_coeff = FROBENIUS_COEFF_FQ2_C1[1].pow_vartime([1_u64]);
+        let frob_coeff = FROBENIUS_COEFF_FQ2_C1[1];
+
         let mut a_fp2 = FieldVector(vec![a[0].clone(), a[1].clone()]);
         a_fp2 = fp2_chip.conjugate(ctx, a_fp2);
-        // out_fp2.push(a_fp2);
 
         // if `frob_coeff` is in `Fp` and not just `Fp2`, then we can be more efficient in multiplication
-        if frob_coeff == Fq2::one() {
-            out_fp2.push(a_fp2);
-        } else if frob_coeff == Fq2::zero() {
-            let frob_fixed = fp_chip.load_constant(ctx, frob_coeff.c0);
-            {
-                let out_nocarry = fp2_chip.0.fp_mul_no_carry(ctx, a_fp2, frob_fixed);
-                out_fp2.push(fp2_chip.carry_mod(ctx, out_nocarry));
-            }
-        } else {
-            let frob_fixed = fp2_chip.load_constant(ctx, frob_coeff);
-            out_fp2.push(fp2_chip.mul(ctx, a_fp2, frob_fixed));
-        }
+        // if frob_coeff == Fq::one() {
+        // out_fp2.push(a_fp2);
+        // } else if frob_coeff == Fq2::zero() {
+        // let frob_fixed = fp_chip.load_constant(ctx, frob_coeff.c0);
+        // {
+        // let out_nocarry = fp2_chip.0.fp_mul_no_carry(ctx, a_fp2, frob_fixed);
+        // out_fp2.push(fp2_chip.carry_mod(ctx, out_nocarry));
+        // }
+        // } else {
+        // let frob_fixed = fp2_chip.load_constant(ctx, frob_coeff);
+        // out_fp2.push(fp2_chip.mul(ctx, a_fp2, frob_fixed));
+        // }
+
+        let frob_fixed = fp_chip.load_constant(ctx, frob_coeff);
+        out_fp2.push(fp_chip.mul(ctx, a_fp2, frob_fixed));
 
         let out_coeffs = out_fp2
             .iter()
@@ -127,12 +132,12 @@ impl<'chip, F: PrimeField> BlsSignatureChip<'chip, F> {
         // assert_eq!(actual, lambdaPx_6_x_sq.0[0].value);
 
         // check the two are equal
-        // println!("psi_x.0[0].value: {}", psi_x.0[0].value);
-        // println!("lambda_Px_6_x_sq.0[0].value: {}", lambda_Px_6_x_sq.0[0].value);
-        // println!("psi_y.0[0].value: {}", psi_y.0[0].value);
-        // println!("lambda_Py_6_x_sq.0[0].value: {}", lambda_Py_6_x_sq.0[0].value);
-        // assert_eq!(psi_x.0[0].value, lambda_Px_6_x_sq.0[0].value);
-        // assert_eq!(psi_y.0[0].value, lambda_Py_6_x_sq.0[0].value);
+        println!("psi_x.0[0].value: {}", psi_x.0[0].value);
+        println!("lambda_Px_6_x_sq.0[0].value: {}", lambda_Px_6_x_sq.0[0].value);
+        println!("psi_y.0[0].value: {}", psi_y.0[0].value);
+        println!("lambda_Py_6_x_sq.0[0].value: {}", lambda_Py_6_x_sq.0[0].value);
+        assert_eq!(psi_x.0[0].value, lambda_Px_6_x_sq.0[0].value);
+        assert_eq!(psi_y.0[0].value, lambda_Py_6_x_sq.0[0].value);
     }
 
     // Verifies that e(g1, signature) = e(pubkey, H(m)) by checking e(g1, signature)*e(pubkey, -H(m)) === 1
